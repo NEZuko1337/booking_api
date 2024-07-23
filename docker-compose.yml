@@ -12,6 +12,11 @@ services:
     ports:
       - "${POSTGRES_PORT}:5432"
 
+  redis:
+    image: redis:6
+    ports:
+      - "6379:6379"
+
   web:
     build: .
     command: sh -c "python init_db.py && uvicorn app.main:app --host 0.0.0.0 --port 8000"
@@ -21,12 +26,15 @@ services:
       - "8000:8000"
     depends_on:
       - db
+      - redis
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_HOST: db
       POSTGRES_PORT: 5432
       POSTGRES_DATABASE: ${POSTGRES_DATABASE}
+      CELERY_BROKER_URL: ${CELERY_BROKER_URL}
+      CELERY_RESULT_BACKEND: ${CELERY_RESULT_BACKEND}
 
 volumes:
   postgres_data:

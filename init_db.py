@@ -1,7 +1,9 @@
 import os
+import time
 
 import psycopg2
 from dotenv import load_dotenv
+from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 
 load_dotenv()
 
@@ -12,7 +14,39 @@ DB_HOST = os.getenv('POSTGRES_HOST')
 DB_PORT = os.getenv('POSTGRES_PORT')
 DB_NAME = os.getenv('POSTGRES_DATABASE')
 
-# Connect to the PostgreSQL database
+
+def connect_to_postgres():
+    while True:
+        try:
+            conn = psycopg2.connect(
+                dbname='postgres',
+                user=DB_USER,
+                password=DB_PASSWORD,
+                host=DB_HOST,
+                port=DB_PORT
+            )
+            return conn
+        except psycopg2.OperationalError as e:
+            print("PostgreSQL пока что не готов к использованию, повторная попытка через 5 секунд")
+            time.sleep(5)
+
+
+# Коннект к постгресу
+conn = connect_to_postgres()
+conn.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
+cur = conn.cursor()
+
+# Тут чекаем есть ли такая база
+cur.execute(f"SELECT 1 FROM pg_catalog.pg_database WHERE datname = '{DB_NAME}';")
+exists = cur.fetchone()
+
+if not exists:
+    cur.execute(f'CREATE DATABASE {DB_NAME};')
+
+cur.close()
+conn.close()
+
+# Коннектимся к существующей, либо к только что созданной бд
 conn = psycopg2.connect(
     dbname=DB_NAME,
     user=DB_USER,
@@ -21,10 +55,10 @@ conn = psycopg2.connect(
     port=DB_PORT
 )
 
-# Create a cursor object
+# курсор
 cur = conn.cursor()
 
-# SQL commands to create tables
+# Сырой sql для создания баз
 create_users_table = """
 CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
@@ -62,15 +96,16 @@ CREATE TABLE IF NOT EXISTS bookings (
     CONSTRAINT bookings_unique_booking UNIQUE (book_id, start_date, end_date)
 );
 """
-# Execute the SQL commands in the correct order
+
+# Экзекутим в базу
 cur.execute(create_users_table)
 cur.execute(create_genres_table)
 cur.execute(create_books_table)
 cur.execute(create_booking_table)
 
-# Commit changes and close the connection
+# Комитим и закрываем коннект
 conn.commit()
 cur.close()
 conn.close()
 
-print("Tables created successfully!")
+print("Таблицы успешно созданы")
