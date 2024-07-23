@@ -1,3 +1,5 @@
+from datetime import date
+
 from pydantic import BaseModel
 
 
@@ -45,6 +47,16 @@ class BookViewModel(BaseModel):
     pages: int
     author_id: int
     genres: str
+
+    class Config:
+        orm_mode = True
+
+
+class BookingView(BaseModel):
+    book_id: int
+    user_id: int
+    start_date: date
+    end_date: date
 
     class Config:
         orm_mode = True

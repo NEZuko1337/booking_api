@@ -52,10 +52,21 @@ CREATE TABLE IF NOT EXISTS books (
 );
 """
 
+create_booking_table = """
+CREATE TABLE IF NOT EXISTS bookings (
+    id SERIAL PRIMARY KEY,
+    book_id INTEGER NOT NULL REFERENCES books(id),
+    user_id INTEGER NOT NULL REFERENCES users(id),
+    start_date TIMESTAMP NOT NULL,
+    end_date TIMESTAMP NOT NULL,
+    CONSTRAINT bookings_unique_booking UNIQUE (book_id, start_date, end_date)
+);
+"""
 # Execute the SQL commands in the correct order
 cur.execute(create_users_table)
 cur.execute(create_genres_table)
 cur.execute(create_books_table)
+cur.execute(create_booking_table)
 
 # Commit changes and close the connection
 conn.commit()

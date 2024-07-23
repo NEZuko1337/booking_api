@@ -1,3 +1,4 @@
+from datetime import date
 from typing import Optional, List
 
 import sqlalchemy as sa
@@ -85,3 +86,24 @@ class Book(Base):
 
         books = await db_session.get().execute(query)
         return books.scalars().all()
+
+    @classmethod
+    async def is_available(cls, book_id: int, start_date: date, end_date: date):
+        from app.models import Booking
+        query = sa.select(Booking).where(
+            sa.and_(
+                Booking.book_id == book_id,
+                sa.or_(
+                    sa.and_(
+                        Booking.start_date >= start_date,
+                        Booking.end_date <= end_date
+                    ),
+                    sa.and_(
+                        Booking.start_date <= start_date,
+                        Booking.end_date > end_date
+                    )
+                )
+            )
+        )
+        existing_bookings = await db_session.get().execute(query)
+        return not existing_bookings.scalars().first()
