@@ -2,7 +2,8 @@ from fastapi import APIRouter
 
 from app.db.conntection import Transaction
 from app.exceptions import NotFoundError
-from app.models import Genre
+from app.genre.genre import Genre
+
 from app.protocol import Response
 from app.schemas import GenreView
 

@@ -9,6 +9,7 @@ from app.db.conntection import db_session
 
 
 class Book(Base):
+    from app.users.user import User
     __tablename__ = 'books'
     id = Column(Integer, primary_key=True, index=True)
     title = Column(String, index=True)
@@ -89,7 +90,7 @@ class Book(Base):
 
     @classmethod
     async def is_available(cls, book_id: int, start_date: date, end_date: date):
-        from app.models import Booking
+        from app.bookings.booking import Booking
         query = sa.select(Booking).where(
             sa.and_(
                 Booking.book_id == book_id,

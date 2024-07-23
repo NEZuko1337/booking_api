@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException
 
+from app.bookings.booking import Booking
 from app.db.conntection import Transaction
-from app.models import Book, Booking
 from app.protocol import Response
 from app.schemas import BookingView
 
@@ -11,7 +11,8 @@ router = APIRouter()
 @router.post("/")
 async def create_booking(data: BookingView):
     async with Transaction():
-        from app.models import User
+        from app.users.user import User
+        from app.books.book import Book
         is_available = await Book.is_available(book_id=data.book_id, start_date=data.start_date, end_date=data.end_date)
         author = await User.get_author_by_id(data.user_id)
         print(is_available, author)

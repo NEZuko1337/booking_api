@@ -2,7 +2,10 @@ import uvicorn
 from fastapi import FastAPI, Depends
 
 from app.db import get_session
-from app.routers import users, genres, books, bookings
+from app.users import users
+from app.genre import genres
+from app.bookings import bookings
+from app.books import books
 
 # Инициализация приложения FastAPI
 app = FastAPI(

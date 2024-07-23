@@ -8,6 +8,8 @@ from app.db.conntection import db_session
 
 
 class Booking(Base):
+    from app.books.book import Book
+    from app.users.user import User
     __tablename__ = 'bookings'
 
     id = Column(Integer, primary_key=True, index=True)

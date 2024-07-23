@@ -12,7 +12,7 @@ from sqlalchemy.future import select
 
 from app.db import session_maker
 from app.db.conntection import db_session
-from app.models.booking import Booking
+from app.bookings.booking import Booking
 
 load_dotenv()
 nest_asyncio.apply()

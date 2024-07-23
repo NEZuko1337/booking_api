@@ -2,9 +2,10 @@ from fastapi import APIRouter
 
 from app.db.conntection import Transaction
 from app.exceptions import NotFoundError
-from app.models import User
+
 from app.protocol import Response
 from app.schemas import UserRegistrationView, UserView, UserUpdateView
+from app.users.user import User
 
 router = APIRouter()
 
